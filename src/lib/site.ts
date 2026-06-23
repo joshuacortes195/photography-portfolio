@@ -75,5 +75,4 @@ export function instagramUrl(handle: string): string {
 
 export const NAV = [
   { href: "/", label: "Home" },
-  { href: "/work", label: "Work" },
 ] as const;

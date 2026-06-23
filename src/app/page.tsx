@@ -42,19 +42,12 @@ export default async function Home() {
             thirds
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted">
-            A collective of three artists sharing one lens. Each of us shoots
-            our own way — together it&apos;s an afterimage. Follow the shared
-            account, or explore each of us below.
+            A collective of 3 artists. Each of us shoots our own way with our
+            own perspective. Follow the shared account, or follow each of us
+            individually below!
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Link
-              href="/work"
-              className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              View work
-              <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
             <a
               href={SITE.instagramUrl}
               target="_blank"
