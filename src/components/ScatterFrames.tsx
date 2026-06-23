@@ -7,11 +7,11 @@ export type CollageItem = DriveMedia & { slug: string };
 // appear as the screen widens. Positions stay near the corners/sides so they
 // don't sit on top of the headline.
 const SPOTS = [
-  "left-[1%] top-[6%] w-20 -rotate-6 sm:w-28 lg:w-36",
-  "right-[2%] bottom-[8%] w-20 rotate-[7deg] sm:w-28 lg:w-36",
-  "right-[3%] top-[7%] hidden w-24 rotate-3 sm:block lg:w-32",
-  "left-[3%] bottom-[6%] hidden w-24 -rotate-3 sm:block lg:w-32",
-  "right-[27%] top-[2%] hidden rotate-2 lg:block lg:w-24",
+  "left-[1%] top-[6%] w-28 -rotate-6 sm:w-36 lg:w-48",
+  "right-[2%] bottom-[8%] w-28 rotate-[7deg] sm:w-36 lg:w-48",
+  "right-[3%] top-[7%] hidden w-32 rotate-3 sm:block lg:w-44",
+  "left-[3%] bottom-[6%] hidden w-32 -rotate-3 sm:block lg:w-44",
+  "right-[23%] top-[2%] hidden rotate-2 lg:block lg:w-32",
 ];
 
 export default function ScatterFrames({ items }: { items: CollageItem[] }) {
