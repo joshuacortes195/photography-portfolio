@@ -42,7 +42,7 @@ export default async function Home() {
             thirds
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted">
-            A collective of 3 artists. Each of us shoots our own way with our
+            A collective of three photographers. Each of us shoots our own way with our
             own perspective. Follow the shared account, or follow each of us
             individually below!
           </p>
