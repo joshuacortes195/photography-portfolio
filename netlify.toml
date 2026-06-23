@@ -1,0 +1,15 @@
+# Netlify build config. The official Next.js runtime plugin handles SSR, ISR
+# (the 5-min gallery auto-refresh), route handlers, and image optimization.
+# Netlify auto-installs @netlify/plugin-nextjs when this plugin is referenced.
+#
+# Remember to set GOOGLE_DRIVE_API_KEY (and optionally REVALIDATE_SECRET) under
+# Site settings → Environment variables in the Netlify dashboard.
+
+[build]
+  command = "next build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

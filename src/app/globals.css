@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  /* Dark, gallery-first palette */
+  /* Dark, gallery-first palette. Per-member pages override these vars on a
+     wrapper element (see src/lib/themes.ts) to re-skin the whole page. */
   --background: #0a0a0b;
   --foreground: #ededed;
   --muted: #a1a1aa;
   --accent: #e7b75f; /* warm film-amber accent */
+  --heading: var(--font-geist-sans); /* member themes can swap to a serif */
 }
 
 @theme inline {
@@ -15,6 +17,7 @@
   --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--heading);
 }
 
 body {

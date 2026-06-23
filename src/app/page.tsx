@@ -1,59 +1,95 @@
 import Link from "next/link";
 import { ArrowIcon, InstagramIcon } from "@/components/Icons";
+import ScatterFrames, { type CollageItem } from "@/components/ScatterFrames";
 import { SITE, MEMBERS } from "@/lib/site";
+import { listFolderMedia } from "@/lib/drive";
 
-export default function Home() {
+export const revalidate = 300;
+
+// Shuffle so the scattered frames vary between revalidations.
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+export default async function Home() {
+  // Pull photos from every member's folder, tag each with its member, and
+  // scatter a random few around the hero.
+  const lists = await Promise.all(
+    MEMBERS.map(async (m) => {
+      const photos = await listFolderMedia(m.drive.photos, { revalidate });
+      return photos.map((p): CollageItem => ({ ...p, slug: m.slug }));
+    })
+  );
+  const collage = shuffle(lists.flat());
+
   return (
-    <div className="mx-auto max-w-6xl px-5">
-      {/* Hero */}
-      <section className="flex min-h-[70vh] flex-col justify-center py-20">
-        <p className="font-mono text-xs uppercase tracking-[0.25em] text-accent">
-          Visual collective
-        </p>
-        <h1 className="mt-4 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl">
-          afterimage
-          <span className="text-muted"> / </span>
-          thirds
-        </h1>
-        <p className="mt-6 max-w-xl text-lg text-muted">{SITE.description}</p>
+    <div>
+      {/* Hero / about — full-bleed so the frames can scatter to the edges */}
+      <section className="relative overflow-hidden">
+        <ScatterFrames items={collage} />
+        <div className="relative z-10 mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center px-5 py-20">
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-accent">
+            Visual collective
+          </p>
+          <h1 className="mt-4 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl">
+            afterimage
+            <span className="text-muted">.</span>
+            thirds
+          </h1>
+          <p className="mt-6 max-w-xl text-lg text-muted">
+            A collective of three artists sharing one lens. Each of us shoots
+            our own way — together it&apos;s an afterimage. Follow the shared
+            account, or explore each of us below.
+          </p>
 
-        <div className="mt-10 flex flex-wrap items-center gap-3">
-          <Link
-            href="/work"
-            className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            View work
-            <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-          <a
-            href={SITE.instagramUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 px-6 text-sm font-medium text-foreground transition-colors hover:border-white/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            <InstagramIcon className="size-4" />@{SITE.instagram}
-          </a>
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Link
+              href="/work"
+              className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              View work
+              <ArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <a
+              href={SITE.instagramUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 px-6 text-sm font-medium text-foreground transition-colors hover:border-white/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              <InstagramIcon className="size-4" />@{SITE.instagram}
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* Members strip */}
-      <section className="border-t border-white/10 py-16">
-        <div className="flex items-end justify-between">
-          <h2 className="font-mono text-sm uppercase tracking-[0.2em] text-muted">
-            The collective
-          </h2>
-          <Link
-            href="/about"
-            className="inline-flex min-h-11 items-center gap-1 text-sm text-foreground/70 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            About us <ArrowIcon className="size-3.5" />
-          </Link>
-        </div>
-        <ul className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 sm:grid-cols-4">
+      {/* The collective */}
+      <section className="mx-auto max-w-6xl border-t border-white/10 px-5 py-16">
+        <h2 className="font-mono text-sm uppercase tracking-[0.2em] text-muted">
+          The collective
+        </h2>
+        <ul className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {MEMBERS.map((m) => (
-            <li key={m.handle} className="bg-background p-6">
-              <p className="text-lg font-medium">{m.name}</p>
-              <p className="mt-1 font-mono text-xs text-muted">@{m.handle}</p>
+            <li key={m.slug}>
+              <Link
+                href={`/members/${m.slug}`}
+                className="group flex h-full flex-col rounded-xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                <span className="flex items-center gap-1.5 text-lg font-medium">
+                  {m.name}
+                  <ArrowIcon className="size-3.5 text-muted transition-transform group-hover:translate-x-0.5" />
+                </span>
+                {m.handle && (
+                  <span className="mt-1 font-mono text-xs text-muted">
+                    @{m.handle}
+                  </span>
+                )}
+                <span className="mt-4 text-sm text-muted">{m.role}</span>
+              </Link>
             </li>
           ))}
         </ul>
