@@ -8,6 +8,7 @@ export const SITE = {
     "afterimage.thirds is a collective of three artists sharing one lens. Photography, frames, and afterimages.",
   instagram: "afterimage.thirds",
   instagramUrl: "https://instagram.com/afterimage.thirds",
+  email: "afterimage.thirds@gmail.com",
 } as const;
 
 export type Member = {
