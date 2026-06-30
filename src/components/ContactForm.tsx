@@ -6,6 +6,11 @@ import { SITE } from "@/lib/site";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
+// Web3Forms' free plan only accepts submissions from the browser, so we post
+// directly to their endpoint. The access key is public by design.
+const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
 export default function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -46,26 +51,55 @@ export default function ContactForm() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // Honeypot: a filled hidden field means a bot — pretend it worked.
+    if (botcheck.trim() !== "") {
+      setStatus("sent");
+      return;
+    }
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setStatus("error");
+      setError("Please fill in your name, email, and message.");
+      return;
+    }
+    if (!EMAIL_RE.test(email.trim())) {
+      setStatus("error");
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!ACCESS_KEY) {
+      setStatus("error");
+      setError("The contact form isn't configured yet. Please email us instead.");
+      return;
+    }
+
     setStatus("sending");
     setError("");
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message, botcheck }),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: ACCESS_KEY,
+          subject: `New message from ${name} — afterimage.thirds`,
+          from_name: "afterimage.thirds website",
+          name,
+          email,
+          message,
+        }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         success?: boolean;
-        error?: string;
+        message?: string;
       };
-      if (res.ok && data.success) {
+      if (data.success) {
         setStatus("sent");
         setName("");
         setEmail("");
         setMessage("");
       } else {
         setStatus("error");
-        setError(data.error || "Something went wrong. Please try again.");
+        setError(data.message || "Something went wrong. Please try again.");
       }
     } catch {
       setStatus("error");

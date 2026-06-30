@@ -23,7 +23,7 @@ const csp = [
   `font-src 'self'`,
   `style-src 'self' 'unsafe-inline'`,
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  `connect-src 'self'${isDev ? " ws:" : ""}`,
+  `connect-src 'self' https://api.web3forms.com${isDev ? " ws:" : ""}`,
   `frame-src https://drive.google.com`,
   `upgrade-insecure-requests`,
 ].join("; ");
