@@ -14,6 +14,9 @@ const SPOTS = [
   "right-[23%] top-[2%] hidden rotate-2 lg:block lg:w-32",
 ];
 
+/** Number of scatter spots — the home page uses this to size its photo pick. */
+export const SPOTS_COUNT = SPOTS.length;
+
 export default function ScatterFrames({ items }: { items: CollageItem[] }) {
   const frames = items.slice(0, SPOTS.length);
   if (frames.length === 0) return null;
@@ -32,7 +35,11 @@ export default function ScatterFrames({ items }: { items: CollageItem[] }) {
           <img
             src={m.thumbnailUrl}
             alt=""
-            loading="lazy"
+            // The first two frames show on phones and sit above the fold, so load
+            // them eagerly with high priority for a fast first paint. The rest
+            // (desktop-only) stay lazy.
+            loading={i < 2 ? "eager" : "lazy"}
+            fetchPriority={i < 2 ? "high" : "auto"}
             referrerPolicy="no-referrer"
             style={{ aspectRatio: m.width && m.height ? m.width / m.height : 1 }}
             className="w-full object-cover"

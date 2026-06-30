@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { ArrowIcon, InstagramIcon } from "@/components/Icons";
-import ScatterFrames, { type CollageItem } from "@/components/ScatterFrames";
+import ScatterFrames, {
+  SPOTS_COUNT,
+  type CollageItem,
+} from "@/components/ScatterFrames";
 import { SITE, MEMBERS } from "@/lib/site";
 import { listFolderMedia } from "@/lib/drive";
 
@@ -16,16 +19,32 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+// Build the scattered set so every member's folder is represented: take one
+// random photo from each non-empty folder first, then fill the remaining spots
+// with random photos from the combined pool. A final shuffle randomizes which
+// frame lands in which spot.
+function pickCollage(lists: CollageItem[][], count: number): CollageItem[] {
+  const guaranteed = lists
+    .filter((l) => l.length > 0)
+    .map((l) => shuffle(l)[0]);
+
+  const usedIds = new Set(guaranteed.map((p) => p.id));
+  const rest = shuffle(lists.flat().filter((p) => !usedIds.has(p.id)));
+
+  const fill = rest.slice(0, Math.max(0, count - guaranteed.length));
+  return shuffle([...guaranteed, ...fill]);
+}
+
 export default async function Home() {
   // Pull photos from every member's folder, tag each with its member, and
-  // scatter a random few around the hero.
+  // scatter a random few around the hero — at least one from each member.
   const lists = await Promise.all(
     MEMBERS.map(async (m) => {
       const photos = await listFolderMedia(m.drive.photos, { revalidate });
       return photos.map((p): CollageItem => ({ ...p, slug: m.slug }));
     })
   );
-  const collage = shuffle(lists.flat());
+  const collage = pickCollage(lists, SPOTS_COUNT);
 
   return (
     <div>

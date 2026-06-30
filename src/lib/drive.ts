@@ -41,6 +41,15 @@ function sizeThumbnail(link: string, size: number): string {
 }
 
 /**
+ * Route a Drive image URL through our caching proxy (see
+ * app/api/drive/image/route.ts) so repeat loads are served instantly from the
+ * CDN/browser instead of hitting Drive's slow thumbnail host each time.
+ */
+function proxied(url: string): string {
+  return `/api/drive/image?u=${encodeURIComponent(url)}`;
+}
+
+/**
  * Lists images and videos inside a public Drive folder, newest first.
  * Returns an empty array if the folder isn't configured, the API key is
  * missing, or the request fails — callers can treat that as "nothing yet".
@@ -92,8 +101,8 @@ export async function listFolderMedia(
         id: f.id,
         name: f.name,
         type: isVideo ? "video" : "image",
-        thumbnailUrl: sizeThumbnail(f.thumbnailLink!, 600),
-        fullUrl: sizeThumbnail(f.thumbnailLink!, 2048),
+        thumbnailUrl: proxied(sizeThumbnail(f.thumbnailLink!, 600)),
+        fullUrl: proxied(sizeThumbnail(f.thumbnailLink!, 2048)),
         embedUrl: `https://drive.google.com/file/d/${f.id}/preview`,
         width: meta?.width,
         height: meta?.height,

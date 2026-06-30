@@ -70,7 +70,7 @@ export default function Gallery({
                   loading="lazy"
                   referrerPolicy="no-referrer"
                   style={{ aspectRatio: aspect(m) }}
-                  className="w-full object-cover sepia-[0.12] saturate-[0.92]"
+                  className="w-full object-cover"
                 />
                 {m.type === "video" && <PlayBadge />}
               </span>
