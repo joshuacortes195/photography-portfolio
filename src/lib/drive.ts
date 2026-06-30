@@ -35,18 +35,15 @@ type DriveFile = {
   videoMediaMetadata?: { width?: number; height?: number };
 };
 
-/** Resize a Drive thumbnailLink (which ends in e.g. `=s220`) to a larger size. */
-function sizeThumbnail(link: string, size: number): string {
-  return link.replace(/=s\d+(-[a-z]+)?$/i, `=s${size}`);
-}
-
 /**
- * Route a Drive image URL through our caching proxy (see
- * app/api/drive/image/route.ts) so repeat loads are served instantly from the
- * CDN/browser instead of hitting Drive's slow thumbnail host each time.
+ * URL of a file's thumbnail through our caching proxy (see
+ * app/api/drive/image/[id]/[size]/route.ts). Path-based so the CDN caches each
+ * id+size separately and repeat loads are served instantly instead of hitting
+ * Drive's slow thumbnail host each time. `size` must match an allowed size in
+ * the route.
  */
-function proxied(url: string): string {
-  return `/api/drive/image?u=${encodeURIComponent(url)}`;
+function driveImage(id: string, size: 600 | 2048): string {
+  return `/api/drive/image/${id}/${size}`;
 }
 
 /**
@@ -101,8 +98,8 @@ export async function listFolderMedia(
         id: f.id,
         name: f.name,
         type: isVideo ? "video" : "image",
-        thumbnailUrl: proxied(sizeThumbnail(f.thumbnailLink!, 600)),
-        fullUrl: proxied(sizeThumbnail(f.thumbnailLink!, 2048)),
+        thumbnailUrl: driveImage(f.id, 600),
+        fullUrl: driveImage(f.id, 2048),
         embedUrl: `https://drive.google.com/file/d/${f.id}/preview`,
         width: meta?.width,
         height: meta?.height,
