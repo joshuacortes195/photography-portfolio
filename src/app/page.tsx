@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowIcon, InstagramIcon, MailIcon } from "@/components/Icons";
+import { ArrowIcon, InstagramIcon } from "@/components/Icons";
+import ContactForm from "@/components/ContactForm";
 import ScatterFrames, {
   SPOTS_COUNT,
   type CollageItem,
@@ -108,37 +109,19 @@ export default async function Home() {
       </section>
 
       {/* Contact us */}
-      <section className="mx-auto max-w-6xl border-t border-white/10 px-5 py-16">
+      <section
+        id="contact"
+        className="mx-auto max-w-6xl scroll-mt-20 border-t border-white/10 px-5 py-16"
+      >
         <h2 className="font-mono text-sm uppercase tracking-[0.2em] text-muted">
           Contact us
         </h2>
         <p className="mt-8 max-w-xl text-lg text-muted">
-          Want to work with us or just say hello? Send us an email and we&apos;ll
+          Want to work with us or just say hello? Drop us a message and we&apos;ll
           get back to you.
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href={`mailto:${SITE.email}`}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 px-6 text-sm font-medium text-foreground transition-colors hover:border-white/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            <MailIcon className="size-4" />
-            {SITE.email}
-          </a>
-        </div>
-
-        <p className="mt-6 text-sm text-muted">
-          Or message us on{" "}
-          <a
-            href={SITE.instagramUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="font-medium text-foreground underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            Instagram
-          </a>
-          !
-        </p>
+        <ContactForm />
       </section>
     </div>
   );
